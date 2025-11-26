@@ -23,7 +23,9 @@ class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
@@ -42,8 +44,14 @@ class _UploadScreenState extends State<UploadScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-      final storageService = Provider.of<StorageService>(context, listen: false);
-      final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+      final storageService = Provider.of<StorageService>(
+        context,
+        listen: false,
+      );
+      final firestoreService = Provider.of<FirestoreService>(
+        context,
+        listen: false,
+      );
 
       // 1. Upload file to Storage
       final String downloadUrl = await storageService.uploadImage(
@@ -73,9 +81,9 @@ class _UploadScreenState extends State<UploadScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       }
     } finally {
       if (mounted) {
@@ -104,9 +112,14 @@ class _UploadScreenState extends State<UploadScreen> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: _imageFile != null
-                    ? Image.file(_imageFile!, fit: BoxFit.cover)
-                    : const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
+                child:
+                    _imageFile != null
+                        ? Image.file(_imageFile!, fit: BoxFit.cover)
+                        : const Icon(
+                          Icons.add_a_photo,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
               ),
             ),
             const SizedBox(height: 16),
@@ -124,10 +137,12 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _isUploading || _imageFile == null ? null : _uploadImage,
-              child: _isUploading
-                  ? const CircularProgressIndicator()
-                  : const Text('Upload'),
+              onPressed:
+                  _isUploading || _imageFile == null ? null : _uploadImage,
+              child:
+                  _isUploading
+                      ? const CircularProgressIndicator()
+                      : const Text('Upload'),
             ),
           ],
         ),

@@ -14,7 +14,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final firestoreService = Provider.of<FirestoreService>(
+      context,
+      listen: false,
+    );
     final currentUser = FirebaseAuth.instance.currentUser;
     final isOwnProfile = currentUser?.uid == userId;
 
@@ -22,7 +25,9 @@ class ProfileScreen extends StatelessWidget {
       future: firestoreService.getUserProfile(userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         final userProfile = snapshot.data;
@@ -61,7 +66,12 @@ class ProfileScreen extends StatelessWidget {
               _buildProfileHeader(userProfile, isOwnProfile, context),
               const Divider(),
               Expanded(
-                child: _buildImageGrid(firestoreService, userId, isOwnProfile, currentUser),
+                child: _buildImageGrid(
+                  firestoreService,
+                  userId,
+                  isOwnProfile,
+                  currentUser,
+                ),
               ),
             ],
           ),
@@ -70,17 +80,25 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(UserProfile profile, bool isOwnProfile, BuildContext context) {
+  Widget _buildProfileHeader(
+    UserProfile profile,
+    bool isOwnProfile,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundImage: profile.photoURL != null
-                ? NetworkImage(profile.photoURL!)
-                : null,
-            child: profile.photoURL == null ? const Icon(Icons.person, size: 40) : null,
+            backgroundImage:
+                profile.photoURL != null
+                    ? NetworkImage(profile.photoURL!)
+                    : null,
+            child:
+                profile.photoURL == null
+                    ? const Icon(Icons.person, size: 40)
+                    : null,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -109,7 +127,11 @@ class ProfileScreen extends StatelessWidget {
     // To implement update, we'd need to call FirestoreService.saveUserProfile.
     return Row(
       children: [
-        Icon(profile.isPublic ? Icons.public : Icons.lock, size: 16, color: Colors.grey),
+        Icon(
+          profile.isPublic ? Icons.public : Icons.lock,
+          size: 16,
+          color: Colors.grey,
+        ),
         const SizedBox(width: 4),
         Text(
           profile.isPublic ? 'Public Profile' : 'Private Profile',
@@ -121,7 +143,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildImageGrid(
-      FirestoreService firestoreService, String userId, bool isOwnProfile, User? currentUser) {
+    FirestoreService firestoreService,
+    String userId,
+    bool isOwnProfile,
+    User? currentUser,
+  ) {
     // We need to fetch the current user's profile to check THEIR age preference/verification status
     // if we are viewing someone else's profile.
     // Ideally this should be passed in or provided by a UserProvider.
@@ -129,7 +155,10 @@ class ProfileScreen extends StatelessWidget {
     // Let's use a FutureBuilder to get the viewer's profile if needed.
 
     return FutureBuilder<UserProfile?>(
-      future: currentUser != null ? firestoreService.getUserProfile(currentUser.uid) : Future.value(null),
+      future:
+          currentUser != null
+              ? firestoreService.getUserProfile(currentUser.uid)
+              : Future.value(null),
       builder: (context, viewerSnapshot) {
         final viewerProfile = viewerSnapshot.data;
         final bool viewerIsAdult = viewerProfile?.isAdultContent ?? false;
@@ -145,23 +174,24 @@ class ProfileScreen extends StatelessWidget {
             }
 
             final images = snapshot.data!;
-            
+
             // Filter images
-            final visibleImages = images.where((image) {
-              if (isOwnProfile) return true; // Owner sees everything
+            final visibleImages =
+                images.where((image) {
+                  if (isOwnProfile) return true; // Owner sees everything
 
-              // Privacy check
-              if (!image.isPublic) return false;
+                  // Privacy check
+                  if (!image.isPublic) return false;
 
-              // Age check
-              if (image.isAdultContent) {
-                // Must be logged in and verified adult
-                if (currentUser == null) return false;
-                if (!viewerIsAdult) return false;
-              }
+                  // Age check
+                  if (image.isAdultContent) {
+                    // Must be logged in and verified adult
+                    if (currentUser == null) return false;
+                    if (!viewerIsAdult) return false;
+                  }
 
-              return true;
-            }).toList();
+                  return true;
+                }).toList();
 
             if (visibleImages.isEmpty) {
               return const Center(child: Text('No images to display.'));
@@ -182,8 +212,10 @@ class ProfileScreen extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: image.url,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(color: Colors.grey[300]),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    placeholder:
+                        (context, url) => Container(color: Colors.grey[300]),
+                    errorWidget:
+                        (context, url, error) => const Icon(Icons.error),
                   ),
                 );
               },

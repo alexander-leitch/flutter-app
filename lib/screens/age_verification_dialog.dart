@@ -24,9 +24,12 @@ class AgeVerificationDialog extends StatelessWidget {
           onPressed: () async {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
-              final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+              final firestoreService = Provider.of<FirestoreService>(
+                context,
+                listen: false,
+              );
               final profile = await firestoreService.getUserProfile(user.uid);
-              
+
               if (profile != null) {
                 // Update user profile to mark as adult content viewer
                 final updatedProfile = UserProfile(

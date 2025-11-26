@@ -1,5 +1,7 @@
 # Flutter App with Google Sign-In & User Profiles
 
+![Flutter CI](https://github.com/alexander-leitch/flutter-app/workflows/Flutter%20CI/badge.svg)
+
 A Flutter application for mobile and web that allows users to login via their Google Accounts, create profiles, and upload images with privacy controls.
 
 ## Built with Google Antigravity
@@ -12,6 +14,8 @@ This application was generated and built using **Google Antigravity**, an advanc
 - 🖼️ Cached image loading for performance
 - 🔒 Privacy controls (public/private profiles and images)
 - 🔞 Age verification for 18+ content
+- ✅ Automated CI/CD testing with GitHub Actions
+
 
 ## Getting Started
 
@@ -75,6 +79,36 @@ flutter analyze
 # Hot reload (press 'r' in terminal while app is running)
 # Hot restart (press 'R' in terminal while app is running)
 ```
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and testing. The workflow automatically runs on every push and pull request.
+
+### What Gets Tested
+- ✅ **Code Formatting**: Ensures code follows Dart formatting standards
+- ✅ **Static Analysis**: Runs `flutter analyze` to catch potential issues
+- ✅ **Unit & Widget Tests**: Executes all tests in the `test/` directory
+- ✅ **Multi-Channel Testing**: Tests on both Flutter stable and beta channels
+
+### Running Checks Locally
+Before pushing code, you can run the same checks locally:
+
+```bash
+# Check formatting
+dart format --set-exit-if-changed .
+
+# Run static analysis
+flutter analyze
+
+# Run all tests
+flutter test
+
+# Run tests with coverage
+flutter test --coverage
+```
+
+### CI Workflow Status
+View the latest CI runs in the [Actions tab](https://github.com/alexander-leitch/flutter-app/actions) of the repository.
 
 ## Project Structure
 ```

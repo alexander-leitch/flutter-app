@@ -17,7 +17,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    print('Firebase initialization failed: $e');
+    debugPrint('Firebase initialization failed: $e');
   }
 
   runApp(const MyApp());
@@ -96,11 +96,11 @@ class _LoginScreenState extends State<LoginScreen> {
         await FirebaseAuth.instance.signInWithCredential(credential);
       }
     } catch (e) {
-      print('Error signing in with Google: $e');
+      debugPrint('Error signing in with Google: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign in: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to sign in: $e')));
       }
     } finally {
       if (mounted) {
@@ -116,13 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: Center(
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : ElevatedButton.icon(
-                onPressed: _signInWithGoogle,
-                icon: const Icon(Icons.login),
-                label: const Text('Sign in with Google'),
-              ),
+        child:
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton.icon(
+                  onPressed: _signInWithGoogle,
+                  icon: const Icon(Icons.login),
+                  label: const Text('Sign in with Google'),
+                ),
       ),
     );
   }
@@ -146,8 +147,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
-    
+    final firestoreService = Provider.of<FirestoreService>(
+      context,
+      listen: false,
+    );
+
     // Check if user profile exists, if not create one
     final existingProfile = await firestoreService.getUserProfile(user.uid);
     if (existingProfile == null) {
@@ -176,10 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _signOut,
-          ),
+          IconButton(icon: const Icon(Icons.logout), onPressed: _signOut),
         ],
       ),
       body: Center(

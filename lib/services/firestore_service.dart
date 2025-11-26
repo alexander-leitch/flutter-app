@@ -8,7 +8,10 @@ class FirestoreService {
   // --- User Profile ---
 
   Future<void> saveUserProfile(UserProfile user) async {
-    await _db.collection('users').doc(user.uid).set(user.toMap(), SetOptions(merge: true));
+    await _db
+        .collection('users')
+        .doc(user.uid)
+        .set(user.toMap(), SetOptions(merge: true));
   }
 
   Future<UserProfile?> getUserProfile(String uid) async {
@@ -32,7 +35,9 @@ class FirestoreService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => ImageData.fromMap(doc.data(), doc.id)).toList();
-    });
+          return snapshot.docs
+              .map((doc) => ImageData.fromMap(doc.data(), doc.id))
+              .toList();
+        });
   }
 }
