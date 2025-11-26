@@ -34,13 +34,66 @@ Before running the app, you must configure Firebase:
     - **Android**: Place `google-services.json` in `android/app/`.
     - **iOS**: Place `GoogleService-Info.plist` in `ios/Runner/`.
 
-3.  **Set up Firestore and Storage Security Rules** (see walkthrough.md for details)
+3.  **Set up Firestore and Storage Security Rules** (see `walkthrough.md` for details)
 
 ### Running the App
+
+#### First Time Setup
 ```bash
+# Get dependencies
+flutter pub get
+
+# Run the app
 flutter run
+```
+
+#### Restarting the Application
+```bash
+# Clean build artifacts (if needed)
+flutter clean
+
+# Get dependencies
+flutter pub get
+
+# Run on specific device
+flutter run -d chrome          # For web
+flutter run -d macos           # For macOS
+flutter run -d <device-id>     # For mobile (use 'flutter devices' to list)
+```
+
+#### Development Commands
+```bash
+# List available devices
+flutter devices
+
+# Run tests
+flutter test
+
+# Analyze code
+flutter analyze
+
+# Hot reload (press 'r' in terminal while app is running)
+# Hot restart (press 'R' in terminal while app is running)
+```
+
+## Project Structure
+```
+lib/
+├── main.dart                          # App entry point, auth gate, home screen
+├── firebase_options.dart              # Firebase configuration (generated)
+├── models/
+│   ├── user_profile.dart              # User profile data model
+│   └── image_data.dart                # Image metadata model
+├── services/
+│   ├── firestore_service.dart         # Database operations
+│   └── storage_service.dart           # Image upload/storage
+└── screens/
+    ├── profile_screen.dart            # User profile and image grid
+    ├── upload_screen.dart             # Image upload interface
+    └── age_verification_dialog.dart   # Age verification dialog
 ```
 
 ## Resources
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Firebase Setup Guide](https://firebase.google.com/docs/flutter/setup)
