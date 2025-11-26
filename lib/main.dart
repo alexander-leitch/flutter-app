@@ -2,26 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
+import 'services/firestore_service.dart';
+import 'services/storage_service.dart';
+import 'screens/profile_screen.dart';
+import 'models/user_profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // We need to initialize Firebase.
-  // Note: This requires the user to have generated firebase_options.dart
-  // or provide platform specific config.
-  // For this example, we'll assume the user will provide the necessary config
-  // or use the default if they have set it up.
-  // Since I cannot generate firebase_options.dart without the CLI login,
-  // I will wrap this in a try-catch to allow the UI to show even if config is missing,
-  // but it will fail on login.
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
     print('Firebase initialization failed: $e');
-    // Continue running to show the UI, but warn the user.
   }
 
   runApp(const MyApp());
@@ -32,13 +28,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Google Sign In Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        Provider<FirestoreService>(create: (_) => FirestoreService()),
+        Provider<StorageService>(create: (_) => StorageService()),
+      ],
+      child: MaterialApp(
+        title: 'Google Sign In Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const AuthGate(),
       ),
-      home: const AuthGate(),
     );
   }
 }
@@ -126,8 +128,40 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeUserProfile();
+  }
+
+  Future<void> _initializeUserProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    
+    // Check if user profile exists, if not create one
+    final existingProfile = await firestoreService.getUserProfile(user.uid);
+    if (existingProfile == null) {
+      // Create a new profile with data from Firebase Auth
+      final newProfile = UserProfile(
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        isPublic: true,
+        isAdultContent: false, // Default to false, user can update later
+      );
+      await firestoreService.saveUserProfile(newProfile);
+    }
+  }
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -139,7 +173,15 @@ class HomeScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _signOut,
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,9 +196,19 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(user?.email ?? ''),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _signOut,
-              child: const Text('Sign Out'),
+            ElevatedButton.icon(
+              onPressed: () {
+                if (user != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ProfileScreen(userId: user.uid),
+                    ),
+                  );
+                }
+              },
+              icon: const Icon(Icons.person),
+              label: const Text('View My Profile'),
             ),
           ],
         ),
