@@ -79,7 +79,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+        // Web client ID from firebase_options.dart
+        clientId: '153605829362-68v188dc3ir4d1d4la16p036rnrsaeda.apps.googleusercontent.com',
+      ).signIn();
 
       if (googleUser != null) {
         // Obtain the auth details from the request
