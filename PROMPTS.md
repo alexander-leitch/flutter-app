@@ -2,8 +2,8 @@
 
 This document contains all the user prompts that were used to build this Flutter application with Google Antigravity AI.
 
-## Session Date
-November 26, 2025
+## Session 1: Initial Development
+**Date**: November 26, 2025
 
 ## Prompt History
 
@@ -101,6 +101,109 @@ Users must:
 4. Set up Storage Security Rules
 
 See `walkthrough.md` for detailed setup instructions.
+
+---
+
+## Session 2: Firebase Configuration & Login Fix
+**Date**: November 28-30, 2025
+
+### Prompt 5: Debug Login Crash
+```
+Hello, can you check the status of this project and continue from where it left off. I have also setup the firebase account but the application crashes when logging in.
+```
+
+**Result**: Investigated and fixed Firebase configuration issues:
+- Identified missing OAuth credentials in `google-services.json` and `GoogleService-Info.plist`
+- Retrieved SHA-1 fingerprint for Android: `23:79:E7:32:82:19:B3:2D:66:FF:C5:41:F1:A2:1A:A4:A0:3C:FE:FC`
+- Created Firebase Console setup guide
+- Added `INTERNET` permission to `AndroidManifest.xml`
+- Added `CFBundleURLTypes` with `REVERSED_CLIENT_ID` to iOS `Info.plist`
+
+---
+
+### Prompt 6: Run FlutterFire Configure
+```
+try the flutterfire command again
+```
+
+**Result**: 
+- Ran `flutterfire configure` after user enabled Google Sign-In in Firebase Console
+- User added SHA-1 fingerprint to Firebase project
+- Generated updated configuration files with proper OAuth credentials
+- User manually updated `Info.plist` with `REVERSED_CLIENT_ID`
+
+---
+
+### Prompt 7: Test Application
+```
+I've completed the steps, can we run the apps again to test
+```
+
+**Result**: 
+- Started Flutter app on Chrome (web platform)
+- Discovered web-specific Google Sign-In error
+
+---
+
+### Prompt 8: Fix Web Sign-In Error
+```
+I see it in chrome but an error is displayed when clicking on the sign in with Google button.
+```
+
+**Result**: Fixed web platform Google Sign-In:
+- Added `<meta name="google-signin-client_id">` tag to `web/index.html`
+- Updated `GoogleSignIn()` initialization with `clientId` parameter in `main.dart`
+- Performed full app restart to apply changes
+
+---
+
+### Prompt 9: Security Review
+```
+Is there anything in this code that should not be commited to github?
+```
+
+**Result**: 
+- Reviewed all Firebase configuration files
+- Confirmed all files are safe to commit (public API keys, OAuth client IDs)
+- Explained that security comes from Firebase Security Rules, not hiding config files
+
+---
+
+## Technical Details: Firebase Configuration Fix
+
+### Root Cause
+The application was crashing on login because:
+1. Google Sign-In was not enabled in Firebase Console
+2. SHA-1 fingerprint was not added for Android app
+3. OAuth client IDs were missing from configuration files
+4. Web platform required additional client ID configuration
+
+### Solution Steps
+1. **Firebase Console Setup**:
+   - Enabled Google Sign-In provider
+   - Added SHA-1 fingerprint to Android app settings
+   - Downloaded updated `google-services.json` and `GoogleService-Info.plist`
+
+2. **iOS Configuration**:
+   - Added `CFBundleURLTypes` to `Info.plist`
+   - Set `REVERSED_CLIENT_ID` from `GoogleService-Info.plist`
+
+3. **Android Configuration**:
+   - Added `<uses-permission android:name="android.permission.INTERNET"/>`
+   - Updated `google-services.json` with OAuth clients
+
+4. **Web Configuration**:
+   - Added meta tag with web client ID to `index.html`
+   - Passed `clientId` parameter to `GoogleSignIn()` constructor
+
+### Files Modified
+- `android/app/src/main/AndroidManifest.xml`
+- `android/app/google-services.json` (replaced)
+- `ios/Runner/GoogleService-Info.plist` (replaced)
+- `ios/Runner/Info.plist`
+- `lib/firebase_options.dart` (regenerated)
+- `lib/main.dart`
+- `web/index.html`
 
 ---
 

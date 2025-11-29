@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-11-30
+
+### Fixed
+- **Google Sign-In Configuration**: Fixed login crashes by properly configuring Firebase OAuth credentials.
+- **Android Configuration**: Added SHA-1 fingerprint to Firebase project and updated `google-services.json`.
+- **iOS Configuration**: Added `REVERSED_CLIENT_ID` URL scheme to `Info.plist`.
+- **Web Configuration**: Added web client ID meta tag to `index.html` and passed `clientId` to `GoogleSignIn()`.
+- **Internet Permission**: Added `INTERNET` permission to Android `AndroidManifest.xml`.
+
+### Added
+- Created Firebase Console setup guide (`firebase_console_setup.md` in artifacts).
+- SHA-1 fingerprint documentation for debug keystore.
+- Comprehensive troubleshooting documentation.
+
+### Changed
+- Updated `google-services.json` with OAuth client credentials.
+- Updated `GoogleService-Info.plist` with `CLIENT_ID` and `REVERSED_CLIENT_ID`.
+- Regenerated `firebase_options.dart` with `flutterfire configure`.
+- Modified `GoogleSignIn()` initialization to include web client ID.
+
+---
+
 ## [1.0.0] - 2025-11-26
 
 ### Added
